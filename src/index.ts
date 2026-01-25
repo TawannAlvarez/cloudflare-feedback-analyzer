@@ -13,10 +13,22 @@
 /**
  * Cloudflare Worker: Feedback Analyzer
  * 
+ * Main Route (/):
  * - Fetches feedback from D1 database
  * - Aggregates counts by source
- * - Runs AI analysis on feedback (Workers AI)
- * - Returns JSON response
+ * - Returns HTML dashboard with filters and cards
+ * - Displays feedback immediately (before AI analysis)
+ * 
+ * API Route (/api/analyze):
+ * - Fetches feedback from D1
+ * - Runs AI analysis on feedback (Workers AI - Llama 3)
+ * - Extracts theme, sentiment, urgency for each item
+ * - Returns JSON response with analysis results
+ * 
+ * Flow:
+ * 1. User visits dashboard → sees feedback instantly
+ * 2. Browser calls /api/analyze in background
+ * 3. AI results populate asynchronously
  */
 interface D1Database {
   prepare: (sql: string) => {
@@ -81,6 +93,9 @@ async function handleDashboard(env: Env): Promise<Response> {
     .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
     
     header { background: linear-gradient(135deg, #f6821f 0%, #f38020 100%); border-bottom: 3px solid #e67019; margin-bottom: 32px; padding: 24px 0; box-shadow: 0 2px 8px rgba(246, 130, 31, 0.15); }
+    .header-content { display: flex; align-items: center; gap: 16px; }
+    .logo-container { background: white; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .logo { width: 100%; height: auto; max-height: 48px; }
     h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 4px; }
     .subtitle { font-size: 14px; color: rgba(255, 255, 255, 0.9); }
     
@@ -142,8 +157,15 @@ async function handleDashboard(env: Env): Promise<Response> {
 <body>
   <header>
     <div class="container">
-      <h1>Feedback Dashboard</h1>
-      <div class="subtitle">Tawann Alvarez</div>
+      <div class="header-content">
+        <div class="logo-container">
+          <img src="https://www.cloudflare.com/img/logo-cloudflare-dark.svg" alt="Cloudflare" class="logo" />
+        </div>
+        <div>
+          <h1>Feedback Dashboard</h1>
+          <div class="subtitle">Tawann Alvarez</div>
+        </div>
+      </div>
     </div>
   </header>
 

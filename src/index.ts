@@ -80,48 +80,56 @@ async function handleDashboard(env: Env): Promise<Response> {
     
     .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
     
-    header { background: white; border-bottom: 1px solid #e5e7eb; margin-bottom: 32px; padding: 24px 0; }
-    h1 { font-size: 28px; font-weight: 700; color: #111; margin-bottom: 4px; }
-    .subtitle { font-size: 14px; color: #666; }
+    header { background: linear-gradient(135deg, #f6821f 0%, #f38020 100%); border-bottom: 3px solid #e67019; margin-bottom: 32px; padding: 24px 0; box-shadow: 0 2px 8px rgba(246, 130, 31, 0.15); }
+    h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 4px; }
+    .subtitle { font-size: 14px; color: rgba(255, 255, 255, 0.9); }
     
-    .section { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #111; padding-bottom: 12px; border-bottom: 2px solid #f6f7f9; }
+    .main-content { padding-top: 32px; }
+    .section { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1f2937; padding-bottom: 12px; border-bottom: 2px solid #f6821f; }
     
-    .filters-grid { display: grid; gap: 24px; margin-bottom: 24px; }
-    .filter-group { }
-    .filter-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .filters-grid { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-start; }
+    .filter-group { flex: 1; min-width: 200px; }
+    .filter-label { font-size: 13px; font-weight: 600; color: #f6821f; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .filter-dropdown { position: relative; }
+    .filter-toggle { width: 100%; background: white; color: #374151; border: 2px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+    .filter-toggle:hover { border-color: #f6821f; }
+    .filter-toggle.active { border-color: #f6821f; background: #fff7f0; }
+    .filter-menu { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 2px solid #f6821f; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; z-index: 1000; min-width: 200px; }
+    .filter-menu.open { display: block; }
+    .filter-menu-item { padding: 10px 14px; cursor: pointer; transition: all 0.15s; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; user-select: none; }
+    .filter-menu-item:last-child { border-bottom: none; }
+    .filter-menu-item:hover { background: #fff7f0; color: #f6821f; }
+    .filter-menu-item.selected { background: linear-gradient(135deg, #f6821f 0%, #f38020 100%); color: white; font-weight: 500; }
+    .filter-arrow { transition: transform 0.2s; font-size: 12px; }
+    .filter-arrow.open { transform: rotate(180deg); }
     
-    .nav { display: flex; gap: 8px; flex-wrap: wrap; }
-    .nav button { background: white; color: #333; border: 2px solid #e5e7eb; border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
-    .nav button:hover { border-color: #f6821f; background: #fff7f0; }
-    .nav button.active { background: #f6821f; color: white; border-color: #f6821f; }
+    .controls { display: flex; gap: 12px; align-items: center; padding-top: 20px; border-top: 1px solid #f3f4f6; margin-top: 20px; }
+    .btn-clear { background: #374151; color: white; border: none; border-radius: 999px; padding: 10px 20px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+    .btn-clear:hover { background: #1f2937; }
     
-    .controls { display: flex; gap: 12px; align-items: center; padding-top: 20px; border-top: 1px solid #f6f7f9; margin-top: 20px; }
-    .btn-clear { background: #6b7280; color: white; border: none; border-radius: 999px; padding: 10px 20px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
-    .btn-clear:hover { background: #4b5563; }
-    
-    .loading-indicator { display: flex; align-items: center; gap: 12px; background: #fff7f0; padding: 16px 20px; border-radius: 12px; border-left: 4px solid #f6821f; margin-bottom: 20px; }
+    .loading-indicator { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fff7f0 0%, #ffe8d6 100%); padding: 16px 20px; border-radius: 12px; border-left: 4px solid #f6821f; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(246, 130, 31, 0.1); }
     .spinner { width: 20px; height: 20px; border: 3px solid #fcd9b6; border-top: 3px solid #f6821f; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-text { font-weight: 500; color: #92400e; }
     
     .feedback-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .feedback-count { font-size: 14px; color: #666; font-weight: 500; }
+    .feedback-count { font-size: 14px; color: #6b7280; font-weight: 500; background: #f9fafb; padding: 6px 14px; border-radius: 999px; }
     
     .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 12px; transition: all 0.2s; }
-    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #d1d5db; }
+    .card:hover { box-shadow: 0 4px 12px rgba(246, 130, 31, 0.15); border-color: #f6821f; }
     .meta { font-size: 13px; color: #6b7280; margin-bottom: 12px; display: flex; gap: 12px; }
     .meta-item { display: flex; align-items: center; gap: 4px; }
     .tags { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; }
-    .tag-theme { background: #eff6ff; color: #1e40af; }
-    .tag-sentiment-Positive { background: #f0fdf4; color: #15803d; }
-    .tag-sentiment-Neutral { background: #f9fafb; color: #4b5563; }
-    .tag-sentiment-Negative { background: #fef2f2; color: #dc2626; }
-    .tag-urgency-High { background: #fef2f2; color: #dc2626; }
-    .tag-urgency-Medium { background: #fef9c3; color: #a16207; }
-    .tag-urgency-Low { background: #f0fdf4; color: #15803d; }
-    .message { color: #111; line-height: 1.6; }
+    .tag-theme { background: linear-gradient(135deg, #fff7f0 0%, #ffe8d6 100%); color: #c2410c; border: 1px solid #fed7aa; }
+    .tag-sentiment-Positive { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .tag-sentiment-Neutral { background: #f9fafb; color: #4b5563; border: 1px solid #e5e7eb; }
+    .tag-sentiment-Negative { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .tag-urgency-High { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .tag-urgency-Medium { background: #fef9c3; color: #a16207; border: 1px solid #fde68a; }
+    .tag-urgency-Low { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .message { color: #1f2937; line-height: 1.6; }
     
     .hidden { display: none; }
     
@@ -139,7 +147,7 @@ async function handleDashboard(env: Env): Promise<Response> {
     </div>
   </header>
 
-  <div class="container">
+  <div class="container main-content">
     <div id="ai-loading" class="loading-indicator">
       <div class="spinner"></div>
       <div class="loading-text">Analyzing feedback with AI...</div>
@@ -151,27 +159,45 @@ async function handleDashboard(env: Env): Promise<Response> {
       <div class="filters-grid">
         <div class="filter-group">
           <label class="filter-label">Source</label>
-          <div class="nav" id="nav-source"></div>
+          <div class="filter-dropdown">
+            <button class="filter-toggle" id="source-toggle">
+              <span id="source-label">All Sources</span>
+              <span class="filter-arrow">▼</span>
+            </button>
+            <div class="filter-menu" id="source-menu"></div>
+          </div>
         </div>
 
         <div class="filter-group">
           <label class="filter-label">Theme</label>
-          <div class="nav" id="nav-theme">
-            <button class="inactive">Loading themes...</button>
+          <div class="filter-dropdown">
+            <button class="filter-toggle" id="theme-toggle">
+              <span id="theme-label">Loading...</span>
+              <span class="filter-arrow">▼</span>
+            </button>
+            <div class="filter-menu" id="theme-menu"></div>
           </div>
         </div>
 
         <div class="filter-group">
           <label class="filter-label">Sentiment</label>
-          <div class="nav" id="nav-sentiment">
-            <button class="inactive">Loading...</button>
+          <div class="filter-dropdown">
+            <button class="filter-toggle" id="sentiment-toggle">
+              <span id="sentiment-label">Loading...</span>
+              <span class="filter-arrow">▼</span>
+            </button>
+            <div class="filter-menu" id="sentiment-menu"></div>
           </div>
         </div>
 
         <div class="filter-group">
           <label class="filter-label">Urgency</label>
-          <div class="nav" id="nav-urgency">
-            <button class="inactive">Loading...</button>
+          <div class="filter-dropdown">
+            <button class="filter-toggle" id="urgency-toggle">
+              <span id="urgency-label">Loading...</span>
+              <span class="filter-arrow">▼</span>
+            </button>
+            <div class="filter-menu" id="urgency-menu"></div>
           </div>
         </div>
       </div>
@@ -196,19 +222,88 @@ async function handleDashboard(env: Env): Promise<Response> {
     let aiSummary = [];
     
     const content = document.getElementById("content");
-    const navSource = document.getElementById("nav-source");
-    const navTheme = document.getElementById("nav-theme");
-    const navSentiment = document.getElementById("nav-sentiment");
-    const navUrgency = document.getElementById("nav-urgency");
     const aiLoading = document.getElementById("ai-loading");
     const clearFiltersBtn = document.getElementById("clear-filters");
+
+    // Dropdown elements
+    const sourceToggle = document.getElementById("source-toggle");
+    const sourceLabel = document.getElementById("source-label");
+    const sourceMenu = document.getElementById("source-menu");
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeLabel = document.getElementById("theme-label");
+    const themeMenu = document.getElementById("theme-menu");
+    const sentimentToggle = document.getElementById("sentiment-toggle");
+    const sentimentLabel = document.getElementById("sentiment-label");
+    const sentimentMenu = document.getElementById("sentiment-menu");
+    const urgencyToggle = document.getElementById("urgency-toggle");
+    const urgencyLabel = document.getElementById("urgency-label");
+    const urgencyMenu = document.getElementById("urgency-menu");
+
+    // Toggle dropdown menus
+    sourceToggle.onclick = function(e) { 
+      e.stopPropagation();
+      toggleMenu('source'); 
+    };
+    themeToggle.onclick = function(e) { 
+      e.stopPropagation();
+      toggleMenu('theme'); 
+    };
+    sentimentToggle.onclick = function(e) { 
+      e.stopPropagation();
+      toggleMenu('sentiment'); 
+    };
+    urgencyToggle.onclick = function(e) { 
+      e.stopPropagation();
+      toggleMenu('urgency'); 
+    };
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.filter-dropdown')) {
+        sourceMenu.classList.remove('open');
+        themeMenu.classList.remove('open');
+        sentimentMenu.classList.remove('open');
+        urgencyMenu.classList.remove('open');
+        document.querySelectorAll('.filter-arrow').forEach(function(arrow) {
+          arrow.classList.remove('open');
+        });
+      }
+    });
+
+    function toggleMenu(type) {
+      const menus = { source: sourceMenu, theme: themeMenu, sentiment: sentimentMenu, urgency: urgencyMenu };
+      const toggles = { source: sourceToggle, theme: themeToggle, sentiment: sentimentToggle, urgency: urgencyToggle };
+      const currentMenu = menus[type];
+      const currentToggle = toggles[type];
+      const currentArrow = currentToggle.querySelector('.filter-arrow');
+      
+      // Close all other menus
+      Object.keys(menus).forEach(function(key) {
+        if (key !== type) {
+          menus[key].classList.remove('open');
+          toggles[key].querySelector('.filter-arrow').classList.remove('open');
+        }
+      });
+      
+      // Toggle current menu
+      const isOpen = currentMenu.classList.contains('open');
+      
+      if (isOpen) {
+        currentMenu.classList.remove('open');
+        currentArrow.classList.remove('open');
+      } else {
+        currentMenu.classList.add('open');
+        currentArrow.classList.add('open');
+      }
+    }
 
     clearFiltersBtn.onclick = function() {
       activeFilters.source = [];
       activeFilters.theme = [];
       activeFilters.sentiment = [];
       activeFilters.urgency = [];
-      updateActiveButtons();
+      updateDropdownLabels();
+      updateMenuItems();
       render();
     };
 
@@ -310,13 +405,15 @@ async function handleDashboard(env: Env): Promise<Response> {
       }
     }
 
-    function addButton(container, label, count, filterType, filterValue) {
-      const btn = document.createElement("button");
-      btn.textContent = count !== undefined ? label + ' (' + count + ')' : label;
-      btn.dataset.filterType = filterType;
-      btn.dataset.filterValue = filterValue;
+    function addMenuItem(menu, label, count, filterType, filterValue) {
+      const item = document.createElement("div");
+      item.className = "filter-menu-item";
+      item.textContent = count !== undefined ? label + ' (' + count + ')' : label;
+      item.dataset.filterType = filterType;
+      item.dataset.filterValue = filterValue;
       
-      btn.onclick = function() {
+      item.onclick = function(e) {
+        e.stopPropagation();
         const index = activeFilters[filterType].indexOf(filterValue);
         
         if (index === -1) {
@@ -325,115 +422,134 @@ async function handleDashboard(env: Env): Promise<Response> {
           activeFilters[filterType].splice(index, 1);
         }
         
-        updateActiveButtons();
+        updateDropdownLabels();
+        updateMenuItems();
         render();
       };
       
-      container.appendChild(btn);
-      return btn;
+      menu.appendChild(item);
+      return item;
     }
 
-    function addAllButton(container, filterType, allValues) {
-      const btn = document.createElement("button");
-      btn.textContent = "All (" + feedback.length + ")";
-      btn.dataset.filterType = filterType;
-      btn.dataset.filterValue = "ALL_BUTTON";
-      
-      btn.onclick = function() {
-        const allSelected = allValues.length > 0 && allValues.every(function(val) {
-          return activeFilters[filterType].includes(val);
-        });
-        
-        if (allSelected) {
-          activeFilters[filterType] = [];
+    function updateDropdownLabels() {
+      // Source
+      if (activeFilters.source.length === 0) {
+        sourceLabel.textContent = "All Sources";
+        sourceToggle.classList.remove('active');
+      } else if (activeFilters.source.length === Object.keys(counts).length) {
+        sourceLabel.textContent = "All Sources";
+        sourceToggle.classList.add('active');
+      } else {
+        sourceLabel.textContent = activeFilters.source.length + ' selected';
+        sourceToggle.classList.add('active');
+      }
+
+      // Theme
+      if (aiSummary.length > 0) {
+        const allThemes = Array.from(new Set(aiSummary.map(function(a) { return a.theme; })));
+        if (activeFilters.theme.length === 0) {
+          themeLabel.textContent = "All Themes";
+          themeToggle.classList.remove('active');
+        } else if (activeFilters.theme.length === allThemes.length) {
+          themeLabel.textContent = "All Themes";
+          themeToggle.classList.add('active');
         } else {
-          activeFilters[filterType] = allValues.slice();
+          themeLabel.textContent = activeFilters.theme.length + ' selected';
+          themeToggle.classList.add('active');
         }
-        
-        updateActiveButtons();
-        render();
-      };
-      
-      container.appendChild(btn);
-      return btn;
+      }
+
+      // Sentiment
+      if (aiSummary.length > 0) {
+        const allSentiments = Array.from(new Set(aiSummary.map(function(a) { return a.sentiment; })));
+        if (activeFilters.sentiment.length === 0) {
+          sentimentLabel.textContent = "All Sentiments";
+          sentimentToggle.classList.remove('active');
+        } else if (activeFilters.sentiment.length === allSentiments.length) {
+          sentimentLabel.textContent = "All Sentiments";
+          sentimentToggle.classList.add('active');
+        } else {
+          sentimentLabel.textContent = activeFilters.sentiment.length + ' selected';
+          sentimentToggle.classList.add('active');
+        }
+      }
+
+      // Urgency
+      if (aiSummary.length > 0) {
+        const allUrgencies = Array.from(new Set(aiSummary.map(function(a) { return a.urgency; })));
+        if (activeFilters.urgency.length === 0) {
+          urgencyLabel.textContent = "All Urgencies";
+          urgencyToggle.classList.remove('active');
+        } else if (activeFilters.urgency.length === allUrgencies.length) {
+          urgencyLabel.textContent = "All Urgencies";
+          urgencyToggle.classList.add('active');
+        } else {
+          urgencyLabel.textContent = activeFilters.urgency.length + ' selected';
+          urgencyToggle.classList.add('active');
+        }
+      }
     }
 
-    function updateActiveButtons() {
-      [navSource, navTheme, navSentiment, navUrgency].forEach(function(container) {
-        Array.from(container.children).forEach(function(btn) {
-          const filterType = btn.dataset.filterType;
-          const filterValue = btn.dataset.filterValue;
+    function updateMenuItems() {
+      [sourceMenu, themeMenu, sentimentMenu, urgencyMenu].forEach(function(menu) {
+        Array.from(menu.children).forEach(function(item) {
+          const filterType = item.dataset.filterType;
+          const filterValue = item.dataset.filterValue;
           
-          if (filterValue === "ALL_BUTTON") {
-            const allButtons = Array.from(container.children).filter(function(b) {
-              return b.dataset.filterValue !== "ALL_BUTTON";
-            });
-            const allValues = allButtons.map(function(b) { return b.dataset.filterValue; });
-            const allSelected = allValues.length > 0 && allValues.every(function(val) {
-              return activeFilters[filterType].includes(val);
-            });
-            btn.className = allSelected ? "active" : "";
-          } else if (activeFilters[filterType] && activeFilters[filterType].includes(filterValue)) {
-            btn.className = "active";
+          if (activeFilters[filterType] && activeFilters[filterType].includes(filterValue)) {
+            item.classList.add('selected');
           } else {
-            btn.className = "";
+            item.classList.remove('selected');
           }
         });
       });
     }
 
     function initializeFilters() {
-      navSource.innerHTML = "";
-      const sources = Object.keys(counts);
-      addAllButton(navSource, "source", sources);
+      sourceMenu.innerHTML = "";
       Object.entries(counts).forEach(function(entry) {
-        addButton(navSource, entry[0], entry[1], "source", entry[0]);
+        addMenuItem(sourceMenu, entry[0], entry[1], "source", entry[0]);
       });
 
-      navTheme.innerHTML = "";
+      themeMenu.innerHTML = "";
       const themes = Array.from(new Set(aiSummary.map(function(a) { return a.theme; })));
       const themeCounts = {};
       themes.forEach(function(theme) {
         themeCounts[theme] = aiSummary.filter(function(a) { return a.theme === theme; }).length;
       });
-      
-      addAllButton(navTheme, "theme", themes);
       themes.forEach(function(theme) {
-        addButton(navTheme, theme, themeCounts[theme], "theme", theme);
+        addMenuItem(themeMenu, theme, themeCounts[theme], "theme", theme);
       });
 
-      navSentiment.innerHTML = "";
+      sentimentMenu.innerHTML = "";
       const sentiments = Array.from(new Set(aiSummary.map(function(a) { return a.sentiment; })));
       const sentimentCounts = {};
       sentiments.forEach(function(sentiment) {
         sentimentCounts[sentiment] = aiSummary.filter(function(a) { return a.sentiment === sentiment; }).length;
       });
-      
-      addAllButton(navSentiment, "sentiment", sentiments);
       sentiments.forEach(function(sentiment) {
-        addButton(navSentiment, sentiment, sentimentCounts[sentiment], "sentiment", sentiment);
+        addMenuItem(sentimentMenu, sentiment, sentimentCounts[sentiment], "sentiment", sentiment);
       });
 
-      navUrgency.innerHTML = "";
+      urgencyMenu.innerHTML = "";
       const urgencies = Array.from(new Set(aiSummary.map(function(a) { return a.urgency; })));
       const urgencyCounts = {};
       urgencies.forEach(function(urgency) {
         urgencyCounts[urgency] = aiSummary.filter(function(a) { return a.urgency === urgency; }).length;
       });
-      
-      addAllButton(navUrgency, "urgency", urgencies);
       urgencies.forEach(function(urgency) {
-        addButton(navUrgency, urgency, urgencyCounts[urgency], "urgency", urgency);
+        addMenuItem(urgencyMenu, urgency, urgencyCounts[urgency], "urgency", urgency);
       });
       
-      updateActiveButtons();
+      updateDropdownLabels();
+      updateMenuItems();
     }
 
-    const sources = Object.keys(counts);
-    addAllButton(navSource, "source", sources);
+    // Initialize source dropdown immediately
     Object.entries(counts).forEach(function(entry) {
-      addButton(navSource, entry[0], entry[1], "source", entry[0]);
+      addMenuItem(sourceMenu, entry[0], entry[1], "source", entry[0]);
     });
+    updateDropdownLabels();
     
     render();
 

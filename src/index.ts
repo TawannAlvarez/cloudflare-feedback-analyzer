@@ -94,8 +94,8 @@ async function handleDashboard(env: Env): Promise<Response> {
     
     header { background: linear-gradient(135deg, #f6821f 0%, #f38020 100%); border-bottom: 3px solid #e67019; margin-bottom: 32px; padding: 24px 0; box-shadow: 0 2px 8px rgba(246, 130, 31, 0.15); }
     .header-content { display: flex; align-items: center; gap: 16px; }
-    .logo-container { background: white; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .logo { width: 100%; height: auto; max-height: 48px; }
+    .logo-container { background: white; border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .logo { width: 100%; height: auto; }
     h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 4px; }
     .subtitle { font-size: 14px; color: rgba(255, 255, 255, 0.9); }
     

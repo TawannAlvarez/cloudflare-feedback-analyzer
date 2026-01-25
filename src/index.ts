@@ -75,76 +75,120 @@ async function handleDashboard(env: Env): Promise<Response> {
   <meta charset="UTF-8">
   <title>Cloudflare Feedback Dashboard</title>
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont; background: #f6f7f9; margin: 0; padding: 32px; color: #111; }
-    h1 { margin-bottom: 12px; }
-    h2 { margin-top: 30px; margin-bottom: 12px; font-size: 20px; }
-    .nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav button { background: white; color: #333; border: 2px solid #ddd; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-    .nav button:hover { border-color: #f6821f; }
-    .nav button.active { background: #f6821f; color: white; border-color: #f6821f; }
-    .card { background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .meta { font-size: 12px; opacity: 0.6; margin-bottom: 6px; }
-    pre { background: #eee; padding: 12px; border-radius: 10px; overflow-x: auto; margin-top: 20px; font-size: 12px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f6f7f9; color: #111; }
     
-    .loading-indicator {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      padding: 16px;
-      border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-    }
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid #ddd;
-      border-top: 3px solid #f6821f;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+    
+    header { background: white; border-bottom: 1px solid #e5e7eb; margin-bottom: 32px; padding: 24px 0; }
+    h1 { font-size: 28px; font-weight: 700; color: #111; margin-bottom: 4px; }
+    .subtitle { font-size: 14px; color: #666; }
+    
+    .section { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #111; padding-bottom: 12px; border-bottom: 2px solid #f6f7f9; }
+    
+    .filters-grid { display: grid; gap: 24px; margin-bottom: 24px; }
+    .filter-group { }
+    .filter-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav button { background: white; color: #333; border: 2px solid #e5e7eb; border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+    .nav button:hover { border-color: #f6821f; background: #fff7f0; }
+    .nav button.active { background: #f6821f; color: white; border-color: #f6821f; }
+    
+    .controls { display: flex; gap: 12px; align-items: center; padding-top: 20px; border-top: 1px solid #f6f7f9; margin-top: 20px; }
+    .btn-clear { background: #6b7280; color: white; border: none; border-radius: 999px; padding: 10px 20px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+    .btn-clear:hover { background: #4b5563; }
+    
+    .loading-indicator { display: flex; align-items: center; gap: 12px; background: #fff7f0; padding: 16px 20px; border-radius: 12px; border-left: 4px solid #f6821f; margin-bottom: 20px; }
+    .spinner { width: 20px; height: 20px; border: 3px solid #fcd9b6; border-top: 3px solid #f6821f; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { font-weight: 500; color: #92400e; }
+    
+    .feedback-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .feedback-count { font-size: 14px; color: #666; font-weight: 500; }
+    
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 12px; transition: all 0.2s; }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #d1d5db; }
+    .meta { font-size: 13px; color: #6b7280; margin-bottom: 12px; display: flex; gap: 12px; }
+    .meta-item { display: flex; align-items: center; gap: 4px; }
+    .tags { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+    .tag-theme { background: #eff6ff; color: #1e40af; }
+    .tag-sentiment-Positive { background: #f0fdf4; color: #15803d; }
+    .tag-sentiment-Neutral { background: #f9fafb; color: #4b5563; }
+    .tag-sentiment-Negative { background: #fef2f2; color: #dc2626; }
+    .tag-urgency-High { background: #fef2f2; color: #dc2626; }
+    .tag-urgency-Medium { background: #fef9c3; color: #a16207; }
+    .tag-urgency-Low { background: #f0fdf4; color: #15803d; }
+    .message { color: #111; line-height: 1.6; }
+    
     .hidden { display: none; }
+    
+    .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state-title { font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+    .empty-state-text { font-size: 14px; color: #6b7280; }
   </style>
 </head>
 <body>
-  <h1>Feedback Dashboard - Tawann Alvarez</h1>
+  <header>
+    <div class="container">
+      <h1>Feedback Dashboard</h1>
+      <div class="subtitle">Tawann Alvarez</div>
+    </div>
+  </header>
 
-  <div id="ai-loading" class="loading-indicator">
-    <div class="spinner"></div>
-    <div>Analyzing feedback with AI...</div>
+  <div class="container">
+    <div id="ai-loading" class="loading-indicator">
+      <div class="spinner"></div>
+      <div class="loading-text">Analyzing feedback with AI...</div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Filters</h2>
+      
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Source</label>
+          <div class="nav" id="nav-source"></div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Theme</label>
+          <div class="nav" id="nav-theme">
+            <button class="inactive">Loading themes...</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Sentiment</label>
+          <div class="nav" id="nav-sentiment">
+            <button class="inactive">Loading...</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Urgency</label>
+          <div class="nav" id="nav-urgency">
+            <button class="inactive">Loading...</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="clear-filters" class="btn-clear">Clear All Filters</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="feedback-header">
+        <h2 class="section-title" style="margin-bottom: 0;">Feedback</h2>
+        <div class="feedback-count" id="feedback-count"></div>
+      </div>
+      <div id="content"></div>
+    </div>
   </div>
-
-  <h2>Filter by Source</h2>
-  <div class="nav" id="nav-source"></div>
-
-  <h2>Filter by Theme</h2>
-  <div class="nav" id="nav-theme">
-    <button class="inactive">Loading themes...</button>
-  </div>
-
-  <h2>Filter by Sentiment</h2>
-  <div class="nav" id="nav-sentiment">
-    <button class="inactive">Loading...</button>
-  </div>
-
-  <h2>Filter by Urgency</h2>
-  <div class="nav" id="nav-urgency">
-    <button class="inactive">Loading...</button>
-  </div>
-
-  <div style="margin-bottom: 20px;">
-    <button id="clear-filters" style="background: #666; color: white; border: none; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
-  </div>
-
-  <div id="content"></div>
-
-  <h2>AI Debug Output</h2>
-  <pre id="ai-debug">Waiting for AI analysis...</pre>
 
   <script>
     const feedback = ${JSON.stringify(feedback)};
@@ -157,7 +201,6 @@ async function handleDashboard(env: Env): Promise<Response> {
     const navSentiment = document.getElementById("nav-sentiment");
     const navUrgency = document.getElementById("nav-urgency");
     const aiLoading = document.getElementById("ai-loading");
-    const aiDebug = document.getElementById("ai-debug");
     const clearFiltersBtn = document.getElementById("clear-filters");
 
     clearFiltersBtn.onclick = function() {
@@ -212,16 +255,36 @@ async function handleDashboard(env: Env): Promise<Response> {
         }
       }
 
+      // Update feedback count
+      const feedbackCountEl = document.getElementById("feedback-count");
+      if (feedbackCountEl) {
+        feedbackCountEl.textContent = "Showing " + filtered.length + " of " + feedback.length + " items";
+      }
+
       filtered.forEach(function(item) {
         const summary = aiSummary.find(function(a) { return a.id === item.id; }) || { theme: "Unknown", sentiment: "Neutral", urgency: "Medium" };
         const card = document.createElement("div");
         card.className = "card";
         
-        const summaryHTML = isLoading 
-          ? '<div style="opacity: 0.5;"><strong>Theme:</strong> Loading... - <strong>Sentiment:</strong> Loading... - <strong>Urgency:</strong> Loading...</div>'
-          : '<div><strong>Theme:</strong> ' + summary.theme + ' - <strong>Sentiment:</strong> ' + summary.sentiment + ' - <strong>Urgency:</strong> ' + summary.urgency + '</div>';
+        let tagsHTML = '';
+        if (isLoading) {
+          tagsHTML = '<div class="tags"><span class="tag tag-theme">Loading...</span></div>';
+        } else {
+          tagsHTML = '<div class="tags">' +
+            '<span class="tag tag-theme">' + summary.theme + '</span>' +
+            '<span class="tag tag-sentiment-' + summary.sentiment + '">' + summary.sentiment + '</span>' +
+            '<span class="tag tag-urgency-' + summary.urgency + '">' + summary.urgency + '</span>' +
+            '</div>';
+        }
         
-        card.innerHTML = '<div class="meta">' + item.source + ' - ' + new Date(item.timestamp).toLocaleString() + '</div>' + summaryHTML + '<div>' + item.message + '</div>';
+        card.innerHTML = 
+          '<div class="meta">' +
+            '<span class="meta-item">📍 ' + item.source + '</span>' +
+            '<span class="meta-item">🕒 ' + new Date(item.timestamp).toLocaleString() + '</span>' +
+          '</div>' +
+          tagsHTML +
+          '<div class="message">' + item.message + '</div>';
+        
         content.appendChild(card);
       });
       
@@ -232,9 +295,17 @@ async function handleDashboard(env: Env): Promise<Response> {
                                  activeFilters.urgency.length > 0;
         
         if (hasActiveFilters) {
-          content.innerHTML = '<div class="card">No feedback matches the current filters.</div>';
+          content.innerHTML = '<div class="empty-state">' +
+            '<div class="empty-state-icon">🔍</div>' +
+            '<div class="empty-state-title">No feedback matches your filters</div>' +
+            '<div class="empty-state-text">Try adjusting or clearing your filters to see more results</div>' +
+            '</div>';
         } else {
-          content.innerHTML = '<div class="card">No feedback available.</div>';
+          content.innerHTML = '<div class="empty-state">' +
+            '<div class="empty-state-icon">📭</div>' +
+            '<div class="empty-state-title">No feedback available</div>' +
+            '<div class="empty-state-text">There is no feedback to display at this time</div>' +
+            '</div>';
         }
       }
     }
@@ -370,14 +441,12 @@ async function handleDashboard(env: Env): Promise<Response> {
       .then(function(res) { return res.json(); })
       .then(function(data) {
         aiSummary = data.analysis;
-        aiDebug.textContent = data.debug || "AI analysis complete";
         aiLoading.classList.add('hidden');
         initializeFilters();
         render();
       })
       .catch(function(err) {
         console.error('AI analysis failed:', err);
-        aiDebug.textContent = "AI analysis failed: " + err.message;
         aiLoading.classList.add('hidden');
       });
   </script>
